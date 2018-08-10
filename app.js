@@ -2,9 +2,11 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
+var methodOverride = require("method-override");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(methodOverride("_method"));
 
 mongoose.connect("mongodb://localhost/roundtheworld");
 
@@ -54,10 +56,10 @@ app.get("/destinations/new", function(req, res) {
 });
 
 app.post("/destinations", function(req, res) {
-   var name = req.body.name;
-   var image = req.body.image;
-   var description = req.body.description;
-   var newDestination = {name: name, image: image, description: description};
+//   var name = req.body.name;
+//   var image = req.body.image;
+//   var description = req.body.description;
+   var newDestination = req.body.destination;
    
    Destination.create(newDestination, function(err, newlyCreated) {
        if(err) {
@@ -83,6 +85,26 @@ app.get("/destinations/:id", function(req, res) {
 });
 
 
+app.get("/destinations/:id/edit", function(req, res) {
+    Destination.findById(req.params.id, function(err, foundDestination) {
+        if(err) {
+            console.log(err);
+        } else {
+            res.render("edit", {destination: foundDestination});
+        }
+    });
+});
+
+app.put("/destinations/:id", function(req, res) {
+    Destination.findByIdAndUpdate(req.params.id, req.body.destination, function(err, updatedDestination) {
+        if(err) {
+            console.log(err);
+            res.redirect("/destinations");
+        } else {
+            res.redirect("/destinations/" + req.params.id);
+        }
+    })
+})
 
 //Start the server:
 app.listen(process.env.PORT, process.env.IP, function() {
