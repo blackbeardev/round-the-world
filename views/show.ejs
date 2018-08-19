@@ -5,5 +5,8 @@
     <p><%= destination.description %></p>
     <a href="/destinations">Back to the destinations</a>
     <a href="/destinations/<%=destination._id%>/edit">Edit the destination</a>
+    <form action="/destinations/<%=destination._id%>?_method=DELETE" method="POST">
+        <button>Delete the destination</button>
+    </form>
 
 <% include partials/footer %>

@@ -4,21 +4,15 @@ var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var methodOverride = require("method-override");
 
+var Destination = require("./models/destination");
+
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(methodOverride("_method"));
 
 mongoose.connect("mongodb://localhost/roundtheworld");
 
-// Schema Setup
 
-var destinationSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-
-var Destination = mongoose.model("Destination", destinationSchema);
 
 // Destination.create({
 //     name: "Rome, Italy",
@@ -37,7 +31,7 @@ var Destination = mongoose.model("Destination", destinationSchema);
 // Routes
 
 app.get("/", function(req, res) {
-    res.render("landing");
+    res.redirect("/destinations");
 });
 
 app.get("/destinations", function(req, res) {
@@ -103,10 +97,22 @@ app.put("/destinations/:id", function(req, res) {
         } else {
             res.redirect("/destinations/" + req.params.id);
         }
-    })
-})
+    });
+});
+
+app.delete("/destinations/:id", function(req, res) {
+    Destination.findByIdAndRemove(req.params.id, function(err) {
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect("/destinations");
+        }
+    });
+});
 
 //Start the server:
 app.listen(process.env.PORT, process.env.IP, function() {
     console.log("The application has started..");
 });
+
+
