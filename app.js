@@ -5,6 +5,7 @@ var mongoose = require("mongoose");
 var methodOverride = require("method-override");
 
 var Destination = require("./models/destination");
+var seedDB = require("./seeds");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
@@ -12,20 +13,7 @@ app.use(methodOverride("_method"));
 
 mongoose.connect("mongodb://localhost/roundtheworld");
 
-
-
-// Destination.create({
-//     name: "Rome, Italy",
-//     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCLt21VklKaQLufaMRjJ8ltUyf5GLofYUk8psLqDi7jPuvVLwOag",
-//     description: "Rome is beautiful in summer, but very crowded with tourists."
-// }, function(err, destination) {
-//     if(err) {
-//         console.log(err);
-//     } else {
-//         console.log("Newly created destination..");
-//         console.log(destination);
-//     }
-// });
+seedDB();
 
 
 // Routes
