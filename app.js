@@ -4,6 +4,7 @@ var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var methodOverride = require("method-override");
 
+var Comment = require("./models/comment");
 var Destination = require("./models/destination");
 var seedDB = require("./seeds");
 
@@ -28,13 +29,13 @@ app.get("/destinations", function(req, res) {
         if(err) {
             console.log(err);
         } else {
-            res.render("index", {destinations: allDestinations});
+            res.render("destinations/index", {destinations: allDestinations});
         }
     });
 });
 
 app.get("/destinations/new", function(req, res) {
-    res.render("new");
+    res.render("destinations/new");
 });
 
 app.post("/destinations", function(req, res) {
@@ -57,11 +58,11 @@ app.post("/destinations", function(req, res) {
 
 
 app.get("/destinations/:id", function(req, res) {
-    Destination.findById(req.params.id, function(err, foundDestination) {
+    Destination.findById(req.params.id).populate("comments").exec(function(err, foundDestination) {
         if(err) {
             console.log(err);
         } else {
-            res.render("show", {destination:foundDestination});
+            res.render("destinations/show", {destination:foundDestination});
         }
     });
 });
@@ -72,7 +73,7 @@ app.get("/destinations/:id/edit", function(req, res) {
         if(err) {
             console.log(err);
         } else {
-            res.render("edit", {destination: foundDestination});
+            res.render("destinations/edit", {destination: foundDestination});
         }
     });
 });
@@ -94,6 +95,39 @@ app.delete("/destinations/:id", function(req, res) {
             console.log(err);
         } else {
             res.redirect("/destinations");
+        }
+    });
+});
+
+//Comment Routes:
+
+app.get("/destinations/:id/comments/new", function(req, res) {
+   Destination.findById(req.params.id, function(err, foundDestination) {
+       if(err) {
+           console.log(err);
+       } else {
+           res.render("comments/new", {destination:foundDestination});
+       }
+   });
+});
+
+app.post("/destinations/:id/comments", function(req, res) {
+    Destination.findById(req.params.id, function(err, foundDestination) {
+        if(err) {
+            console.log(err);
+            res.redirect("/destinations");
+        } else {
+            //create new comment:
+            Comment.create(req.body.comment, function(err, newComment) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    console.log("Comment created..");
+                    foundDestination.comments.push(newComment);
+                    foundDestination.save();
+                    res.redirect("/destinations/" + req.params.id);
+                }
+            });
         }
     });
 });

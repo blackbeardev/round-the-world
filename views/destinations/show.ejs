@@ -1,12 +1,22 @@
-<% include partials/header %>
+<% include ../partials/header %>
 
 <h1><%= destination.name %></h1>
     <img src="<%= destination.image %>">
     <p><%= destination.description %></p>
+    <div>
+        <p>
+            <a clas"btn btn-success" href="/destinations/<%= destination._id %>/comments/new">Add a comment</a>
+        </p>
+    </div>
+    <% destination.comments.forEach(function(comment) { %>
+        <p>
+            <strong><%= comment.author %></strong> - <%= comment.text %>
+        </p>
+    <% }); %>
     <a href="/destinations">Back to the destinations</a>
     <a href="/destinations/<%=destination._id%>/edit">Edit the destination</a>
     <form action="/destinations/<%=destination._id%>?_method=DELETE" method="POST">
         <button>Delete the destination</button>
     </form>
 
-<% include partials/footer %>
+<% include ../partials/footer %>
